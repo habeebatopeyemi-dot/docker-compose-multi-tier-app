@@ -1,0 +1,41 @@
+services:
+  database:
+    build: ./database
+    container_name: db
+    restart: always
+    networks:
+      - backend-network
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+  backend:
+    build: ./backend
+    container_name: api
+    restart: always
+    depends_on:
+      - database
+    networks:
+      - backend-network
+      - frontend-network
+    ports:
+      - "5000:80"
+
+  frontend:
+    build: ./frontend
+    container_name: ui
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - frontend-network
+    ports:
+      - "8080:80"
+
+networks:
+  backend-network:
+  frontend-network:
+
+volumes:
+  mongo-data:
